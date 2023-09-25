@@ -1,4 +1,6 @@
-﻿using Moq;
+﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
 using RealWordUnitTest.Web.Controllers;
 using RealWordUnitTest.Web.Models;
 using RealWordUnitTest.Web.Repository;
@@ -20,6 +22,16 @@ namespace RealWordUnitTest.Test
                 new() { Id = 2, Name = "Kitap", Price = 200, Stock = 40, Color = "Mavi" }
             };
         }
+
+        [Fact]
+        public async void Index_ActionExecution_ReturnView()
+        {
+            var result = await _productsController.Index();
+
+            Assert.IsType<ViewResult>(result);
+        }
+
+
 
     }
 }
