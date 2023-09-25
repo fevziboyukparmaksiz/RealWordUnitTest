@@ -44,5 +44,28 @@ namespace RealWordUnitTest.Test
 
             Assert.Equal<int>(2, productList.Count());
         }
+
+        [Fact]
+        public async void Details_IdisNull_ReturnRedirectToIndexAction()
+        {
+            var result = await _productsController.Details(null);
+
+            var redirect = Assert.IsType<RedirectToActionResult>(result);
+
+            Assert.Equal("Index", redirect.ActionName);
+        }
+
+        [Fact]
+        public async void Details_IdInvalid_ReturnNotFound()
+        {
+            Product product = null;
+            _mockRepository.Setup(repo => repo.GetById(0))!.ReturnsAsync(product);
+
+            var result = await _productsController.Details(0);
+
+            var notFound = Assert.IsType<NotFoundResult>(result);
+
+            Assert.Equal<int>(404, notFound.StatusCode);
+        }
     }
 }
