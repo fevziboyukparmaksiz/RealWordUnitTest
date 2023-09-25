@@ -9,9 +9,9 @@ namespace RealWordUnitTest.Test
 {
     public class ProductControllerTest
     {
-        private readonly IMock<IRepository<Product>> _mockRepository;
+        private readonly Mock<IRepository<Product>> _mockRepository;
         private readonly ProductsController _productsController;
-        private List<Product> _products;
+        private readonly List<Product> _products;
         public ProductControllerTest()
         {
             _mockRepository = new Mock<IRepository<Product>>();
@@ -31,7 +31,18 @@ namespace RealWordUnitTest.Test
             Assert.IsType<ViewResult>(result);
         }
 
+        [Fact]
+        public async void Index_ActionExecution_ReturnProductList()
+        {
+            _mockRepository.Setup(repo => repo.GetAll()).ReturnsAsync(_products);
 
+            var result = await _productsController.Index();
 
+            var viewResult = Assert.IsType<ViewResult>(result);
+
+            var productList = Assert.IsAssignableFrom<IEnumerable<Product>>(viewResult.Model);
+
+            Assert.Equal<int>(2, productList.Count());
+        }
     }
 }
