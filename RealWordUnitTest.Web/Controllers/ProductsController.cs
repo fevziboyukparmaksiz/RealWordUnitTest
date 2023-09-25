@@ -6,36 +6,35 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RealWordUnitTest.Web.Models;
+using RealWordUnitTest.Web.Repository;
 
 namespace RealWordUnitTest.Web.Controllers
 {
     public class ProductsController : Controller
     {
-        private readonly UnitTestDbContext _context;
+        private readonly IRepository<Product> _productRepository;
 
-        public ProductsController(UnitTestDbContext context)
+        public ProductsController(IRepository<Product> productRepository)
         {
-            _context = context;
+            _productRepository = productRepository;
         }
 
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            return _context.Products != null ?
-                        View(await _context.Products.ToListAsync()) :
-                        Problem("Entity set 'UnitTestDbContext.Products'  is null.");
+            return View(await _productRepository.GetAll());
+
         }
 
         // GET: Products/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Products == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productRepository.GetById(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -59,8 +58,7 @@ namespace RealWordUnitTest.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(product);
-                await _context.SaveChangesAsync();
+                await _productRepository.Create(product);
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -69,12 +67,12 @@ namespace RealWordUnitTest.Web.Controllers
         // GET: Products/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Products == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _productRepository.GetById(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -87,7 +85,7 @@ namespace RealWordUnitTest.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Price,Stock,Color")] Product product)
+        public IActionResult Edit(int id, [Bind("Id,Name,Price,Stock,Color")] Product product)
         {
             if (id != product.Id)
             {
@@ -96,22 +94,8 @@ namespace RealWordUnitTest.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _productRepository.Update(product);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(product);
@@ -120,13 +104,12 @@ namespace RealWordUnitTest.Web.Controllers
         // GET: Products/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Products == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var product = await _context.Products
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var product = await _productRepository.GetById(id.Value);
             if (product == null)
             {
                 return NotFound();
@@ -140,23 +123,22 @@ namespace RealWordUnitTest.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Products == null)
-            {
-                return Problem("Entity set 'UnitTestDbContext.Products'  is null.");
-            }
-            var product = await _context.Products.FindAsync(id);
+            var product = await _productRepository.GetById(id);
             if (product != null)
             {
-                _context.Products.Remove(product);
+                _productRepository.Delete(product);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-            return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+            var product = _productRepository.GetById(id).Result;
+
+            if (product == null)
+                return false;
+
+            return true;
         }
     }
 }
