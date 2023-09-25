@@ -21,9 +21,9 @@ namespace RealWordUnitTest.Web.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-              return _context.Products != null ? 
-                          View(await _context.Products.ToListAsync()) :
-                          Problem("Entity set 'UnitTestDbContext.Products'  is null.");
+            return _context.Products != null ?
+                        View(await _context.Products.ToListAsync()) :
+                        Problem("Entity set 'UnitTestDbContext.Products'  is null.");
         }
 
         // GET: Products/Details/5
@@ -149,14 +149,14 @@ namespace RealWordUnitTest.Web.Controllers
             {
                 _context.Products.Remove(product);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ProductExists(int id)
         {
-          return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
