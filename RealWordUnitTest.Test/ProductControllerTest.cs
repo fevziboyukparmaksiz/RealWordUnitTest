@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using RealWordUnitTest.Web.Controllers;
@@ -181,6 +182,15 @@ namespace RealWordUnitTest.Test
             Assert.Equal(product.Id, productResult.Id);
             Assert.Equal(product.Name, productResult.Name);
 
+        }
+
+        [Theory]
+        [InlineData(1)]
+        public void EditPost_IdisNotEqualProduct_ReturnNotFound(int productId)
+        {
+            var result = _productsController.Edit(2, _products.First(x => x.Id == productId));
+
+            var viewResult = Assert.IsType<NotFoundResult>(result);
         }
     }
 }
