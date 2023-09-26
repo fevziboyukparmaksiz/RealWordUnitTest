@@ -150,5 +150,19 @@ namespace RealWordUnitTest.Test
 
             Assert.Equal("Index", redirectToAction.ActionName);
         }
+
+        [Fact]
+        public async void Edit_IdisInvalid_ReturnNotFound()
+        {
+            Product product = null;
+
+            _mockRepository.Setup(repo => repo.GetById(3))!.ReturnsAsync(product);
+
+            var result = await _productsController.Edit(3);
+
+            var notFound = Assert.IsType<NotFoundResult>(result);
+
+            Assert.Equal(404, notFound.StatusCode);
+        }
     }
 }
