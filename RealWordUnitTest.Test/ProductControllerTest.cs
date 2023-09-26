@@ -95,7 +95,7 @@ namespace RealWordUnitTest.Test
         }
 
         [Fact]
-        public async void Create_InvalidModelState_ReturnView()
+        public async void CreatePOST_InvalidModelState_ReturnView()
         {
             _productsController.ModelState.AddModelError("Name", "Name alanı boş olamaz");
 
@@ -107,13 +107,26 @@ namespace RealWordUnitTest.Test
         }
 
         [Fact]
-        public async void Create_ValidModelState_ReturnRedirectToIndexAction()
+        public async void CreatePOST_ValidModelState_ReturnRedirectToIndexAction()
         {
             var result = await _productsController.Create(_products.First());
 
             var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
 
             Assert.Equal("Index", redirectToAction.ActionName);
+        }
+
+        [Fact]
+        public async void CreatePOST_ValidModelState_CreateMethodExecution()
+        {
+            Product newProduct = null;
+            _mockRepository.Setup(repo => repo.Create(It.IsAny<Product>())).Callback<Product>(x => newProduct = x);
+
+            var result = await _productsController.Create(_products.First());
+
+            _mockRepository.Verify(repo => repo.Create(It.IsAny<Product>()), Times.Once);
+
+            Assert.Equal(_products.First().Id, newProduct.Id);
         }
     }
 }
