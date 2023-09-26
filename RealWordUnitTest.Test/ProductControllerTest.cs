@@ -120,6 +120,7 @@ namespace RealWordUnitTest.Test
         public async void CreatePOST_ValidModelState_CreateMethodExecution()
         {
             Product newProduct = null;
+
             _mockRepository.Setup(repo => repo.Create(It.IsAny<Product>())).Callback<Product>(x => newProduct = x);
 
             var result = await _productsController.Create(_products.First());
@@ -127,6 +128,17 @@ namespace RealWordUnitTest.Test
             _mockRepository.Verify(repo => repo.Create(It.IsAny<Product>()), Times.Once);
 
             Assert.Equal(_products.First().Id, newProduct.Id);
+        }
+
+        [Fact]
+        public async void CreatePOST_InvalidModelState_NeverCreateMethodExecution()
+        {
+            _productsController.ModelState.AddModelError("Name", "Name alanı boş olamaz");
+
+            var result = await _productsController.Create(_products.First());
+            
+            _mockRepository.Verify(repo=> repo.Create(It.IsAny<Product>()),Times.Never);
+
         }
     }
 }
