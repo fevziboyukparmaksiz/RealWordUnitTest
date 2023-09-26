@@ -94,5 +94,17 @@ namespace RealWordUnitTest.Test
 
         }
 
+        [Fact]
+        public async void Create_InvalidModelState_ReturnView()
+        {
+            _productsController.ModelState.AddModelError("Name", "Name alanı boş olamaz");
+
+            var result = await _productsController.Create(_products.First());
+
+            var viewResult = Assert.IsType<ViewResult>(result);
+
+            Assert.IsType<Product>(viewResult.Model);
+        }
+
     }
 }
