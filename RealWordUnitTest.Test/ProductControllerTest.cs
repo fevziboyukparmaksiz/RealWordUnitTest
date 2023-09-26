@@ -164,5 +164,23 @@ namespace RealWordUnitTest.Test
 
             Assert.Equal(404, notFound.StatusCode);
         }
+
+        [Theory]
+        [InlineData(2)]
+        public async void Edit_ValidId_ReturnView(int productId)
+        {
+            var product = _products.First(x => x.Id == productId);
+            _mockRepository.Setup(repo => repo.GetById(productId)).ReturnsAsync(product);
+
+            var result = await _productsController.Edit(productId);
+
+            var viewResult = Assert.IsType<ViewResult>(result);
+
+            var productResult = Assert.IsAssignableFrom<Product>(viewResult.Model);
+
+            Assert.Equal(product.Id, productResult.Id);
+            Assert.Equal(product.Name, productResult.Name);
+
+        }
     }
 }
