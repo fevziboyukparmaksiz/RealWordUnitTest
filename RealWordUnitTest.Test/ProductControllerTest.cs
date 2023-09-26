@@ -84,5 +84,15 @@ namespace RealWordUnitTest.Test
             Assert.Equal(product.Id, resultProduct.Id);
             Assert.Equal(product.Name, resultProduct.Name);
         }
+
+        [Fact]
+        public void Create_ActionExecution_ReturnView()
+        {
+            var result = _productsController.Create();
+
+            Assert.IsType<ViewResult>(result);
+
+        }
+
     }
 }
