@@ -136,9 +136,19 @@ namespace RealWordUnitTest.Test
             _productsController.ModelState.AddModelError("Name", "Name alanı boş olamaz");
 
             var result = await _productsController.Create(_products.First());
-            
-            _mockRepository.Verify(repo=> repo.Create(It.IsAny<Product>()),Times.Never);
 
+            _mockRepository.Verify(repo => repo.Create(It.IsAny<Product>()), Times.Never);
+
+        }
+
+        [Fact]
+        public async void Edit_IdisNull_ReturnRedirectToIndexAction()
+        {
+            var result = await _productsController.Edit(null);
+
+            var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
+
+            Assert.Equal("Index", redirectToAction.ActionName);
         }
     }
 }
