@@ -275,5 +275,18 @@ namespace RealWordUnitTest.Test
             Assert.IsType<RedirectToActionResult>(result);
         }
 
+        [Theory]
+        [InlineData(1)]
+        public async void DeleteConfirmed_ActionExecutes_DeleteMethodExecute(int productId)
+        {
+            var product = _products.First(x => x.Id == productId);
+
+            _mockRepository.Setup(repo => repo.GetById(productId)).ReturnsAsync(product);
+            _mockRepository.Setup(repo => repo.Delete(product));
+
+            await _productsController.DeleteConfirmed(productId);
+
+            _mockRepository.Verify(repo => repo.Delete(It.IsAny<Product>()), Times.Once);
+        }
     }
 }
