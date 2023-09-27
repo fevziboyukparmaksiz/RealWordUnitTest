@@ -129,5 +129,22 @@ namespace RealWordUnitTest.Test
             Assert.IsType<NotFoundResult>(resultNotFound);
 
         }
+
+        [Theory]
+        [InlineData(1)]
+        public async void DeleteProduct_ActionExecute_ReturnNoContent(int productId)
+        {
+            var product = _products.First(x => x.Id == productId);
+
+            _mockRepository.Setup(repo => repo.GetById(productId)).ReturnsAsync(product);
+            _mockRepository.Setup(repo => repo.Delete(product));
+
+            var noContentResult = await _productsApiController.DeleteProduct(productId);
+
+            _mockRepository.Verify(repo => repo.Delete(product), Times.Once);
+
+            Assert.IsType<NoContentResult>(noContentResult);
+        }
+
     }
 }
