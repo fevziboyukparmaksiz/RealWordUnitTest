@@ -73,5 +73,18 @@ namespace RealWordUnitTest.Test
             Assert.Equal(product.Name, returnProduct.Name);
 
         }
+
+        [Theory]
+        [InlineData(1)]
+        public void PutProduct_IdIsNotEqualProduct_ReturnBadRequestResult(int productId)
+        {
+            var product = _products.First(x => x.Id == productId);
+
+            var result = _productsApiController.PutProduct(2, product);
+
+            Assert.IsType<BadRequestResult>(result);
+
+        }
+
     }
 }
