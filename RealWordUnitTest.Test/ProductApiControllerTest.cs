@@ -100,5 +100,20 @@ namespace RealWordUnitTest.Test
             Assert.IsType<NoContentResult>(result);
         }
 
+        [Fact]
+        public async void PostProduct_ActionExecutes_ReturnCreatedAtAction()
+        {
+            var product = _products.First();
+
+            _mockRepository.Setup(repo => repo.Create(product)).Returns(Task.CompletedTask);
+
+            var result = await _productsApiController.PostProduct(product);
+
+            var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(result);
+
+            _mockRepository.Verify(repo => repo.Create(product), Times.Once);
+
+            Assert.Equal("GetProduct",createdAtActionResult.ActionName);
+        }
     }
 }
