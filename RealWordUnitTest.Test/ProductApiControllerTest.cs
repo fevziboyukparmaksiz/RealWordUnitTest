@@ -113,7 +113,21 @@ namespace RealWordUnitTest.Test
 
             _mockRepository.Verify(repo => repo.Create(product), Times.Once);
 
-            Assert.Equal("GetProduct",createdAtActionResult.ActionName);
+            Assert.Equal("GetProduct", createdAtActionResult.ActionName);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        public async void DeleteProduct_IdInValid_ReturnNotFound(int productId)
+        {
+            Product product = null;
+
+            _mockRepository.Setup(repo => repo.GetById(productId))!.ReturnsAsync(product);
+
+            var resultNotFound = await _productsApiController.DeleteProduct(productId);
+
+            Assert.IsType<NotFoundResult>(resultNotFound);
+
         }
     }
 }
