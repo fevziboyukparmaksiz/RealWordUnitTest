@@ -216,5 +216,18 @@ namespace RealWordUnitTest.Test
 
             Assert.Equal("Index", redirectToAction.ActionName);
         }
+
+        [Theory]
+        [InlineData(1)]
+        public async void EditPOST_ValidModelState_EditMethodExecution(int productId)
+        {
+            var product = _products.First(x => x.Id == productId);
+
+            _mockRepository.Setup(repo => repo.Update(product));
+
+            _productsController.Edit(productId, product);
+
+            _mockRepository.Verify(x => x.Update(It.IsAny<Product>()), Times.Once);
+        }
     }
 }
