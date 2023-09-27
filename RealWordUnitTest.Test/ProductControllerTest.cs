@@ -205,5 +205,16 @@ namespace RealWordUnitTest.Test
 
             Assert.IsType<Product>(viewResult.Model);
         }
+
+        [Theory]
+        [InlineData(1)]
+        public void EditPOST_ValidModelState_ReturnRedirectToIndexAction(int productId)
+        {
+            var result = _productsController.Edit(productId, _products.Find(x => x.Id == productId));
+
+            var redirectToAction = Assert.IsType<RedirectToActionResult>(result);
+
+            Assert.Equal("Index", redirectToAction.ActionName);
+        }
     }
 }
