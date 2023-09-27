@@ -86,5 +86,19 @@ namespace RealWordUnitTest.Test
 
         }
 
+        [Theory]
+        [InlineData(1)]
+        public void PutProduct_ActionExecutes_ReturnNoContent(int productId)
+        {
+            var product = _products.First(x => x.Id == productId);
+            _mockRepository.Setup(repo => repo.Update(product));
+
+            var result = _productsApiController.PutProduct(productId, product);
+
+            _mockRepository.Verify(repo => repo.Update(product), Times.Once);
+
+            Assert.IsType<NoContentResult>(result);
+        }
+
     }
 }
