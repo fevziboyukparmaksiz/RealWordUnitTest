@@ -18,7 +18,7 @@ namespace RealWordUnitTest.Test
         private readonly ProductsApiController _productsApiController;
         private List<Product> _products;
 
-        public ProductApiControllerTest(Mock<IRepository<Product>> mockRepository, ProductsApiController productsApiController)
+        public ProductApiControllerTest()
         {
             _mockRepository = new Mock<IRepository<Product>>();
             _productsApiController = new ProductsApiController(_mockRepository.Object);
@@ -38,6 +38,20 @@ namespace RealWordUnitTest.Test
             var returnProducts = Assert.IsAssignableFrom<IEnumerable<Product>>(okResult.Value);
 
             Assert.Equal(2, returnProducts.ToList().Count);
+        }
+
+        [Theory]
+        [InlineData(0)]
+        public async void GetProduct_IdInValid_ReturnNotFound(int productId)
+        {
+            Product product = null;
+
+            _mockRepository.Setup(repo => repo.GetById(productId))!.ReturnsAsync(product);
+
+            var result = await _productsApiController.GetProduct(productId);
+
+            Assert.IsType<NotFoundResult>(result);
+
         }
     }
 }
